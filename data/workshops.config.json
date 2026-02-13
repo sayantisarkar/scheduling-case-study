@@ -1,0 +1,374 @@
+{
+  "services": [
+    { "name": "MOT", "duration": 6 },
+    { "name": "ADR", "duration": 2 },
+    { "name": "CFK", "duration": 4 },
+    { "name": "ATP", "duration": 3 },
+    { "name": "SWP", "duration": 2 }
+  ],
+  "repairs": [
+    { "name": "Axels", "dependency": "", "duration": 3 },
+    { "name": "Body", "dependency": "SWP", "duration": 2 },
+    { "name": "Brakes", "dependency": "", "duration": 1 },
+    { "name": "Chasis", "dependency": "ADR", "duration": 2 },
+    { "name": "B-Check", "dependency": "", "duration": 1 }
+  ],
+  "workshops": [
+    {
+      "id": "workshop-1",
+      "name": "Amsterdam Central",
+      "bays": [
+        {
+          "id": "W1-Bay-1",
+          "services": [
+            {
+              "MOT": ["Monday", "Tuesday"],
+              "ADR": ["Monday", "Tuesday"],
+              "CFK": ["Wednesday"],
+              "ATP": ["Wednesday"]
+            }
+          ],
+          "repairs": [
+            {
+              "Axels": ["Friday"],
+              "Brakes": ["Monday", "Tuesday", "Saturday"],
+              "Chasis": ["Monday", "Tuesday"],
+              "B-Check": ["Monday", "Tuesday", "Saturday"]
+            }
+          ]
+        },
+        {
+          "id": "W1-Bay-2",
+          "services": [
+            {
+              "MOT": ["Tuesday"],
+              "ADR": ["Tuesday"],
+              "CFK": ["Wednesday", "Friday"],
+              "ATP": ["Wednesday", "Friday", "Saturday"]
+            }
+          ],
+          "repairs": [
+            {
+              "Axels": ["Wednesday"],
+              "Brakes": ["Tuesday", "Friday", "Saturday"],
+              "Chasis": ["Tuesday", "Friday"],
+              "B-Check": ["Tuesday", "Friday", "Saturday"]
+            }
+          ]
+        },
+        {
+          "id": "W1-Bay-3",
+          "services": [
+            {
+              "MOT": ["Monday", "Wednesday"],
+              "CFK": ["Friday"],
+              "ATP": ["Friday"]
+            }
+          ],
+          "repairs": [
+            {
+              "Axels": ["Monday", "Wednesday"],
+              "Brakes": ["Monday", "Wednesday", "Saturday"],
+              "Chasis": ["Tuesday"],
+              "B-Check": ["Monday", "Wednesday", "Saturday"]
+            }
+          ]
+        },
+        {
+          "id": "W1-Bay-4",
+          "services": [
+            {
+              "MOT": ["Monday"],
+              "CFK": ["Tuesday", "Friday"],
+              "ATP": ["Tuesday", "Friday", "Saturday"]
+            }
+          ],
+          "repairs": [
+            {
+              "Axels": ["Monday", "Tuesday", "Friday"],
+              "Brakes": ["Monday", "Tuesday", "Friday", "Saturday"],
+              "Chasis": ["Friday"],
+              "B-Check": ["Monday", "Tuesday", "Friday", "Saturday"]
+            }
+          ]
+        }
+      ],
+      "workingHours": {
+        "Monday": { "open": "09:00", "close": "17:00" },
+        "Tuesday": { "open": "09:00", "close": "17:00" },
+        "Wednesday": { "open": "09:00", "close": "17:00" },
+        "Thursday": null,
+        "Friday": { "open": "09:00", "close": "17:00" },
+        "Saturday": { "open": "08:00", "close": "12:00" },
+        "Sunday": null
+      }
+    },
+    {
+      "id": "workshop-2",
+      "name": "Rotterdam Port",
+      "bays": [
+        {
+          "id": "W2-Bay-1",
+          "services": [
+            {
+              "MOT": ["Tuesday", "Thursday"],
+              "ADR": ["Tuesday", "Thursday", "Saturday"],
+              "CFK": ["Wednesday"],
+              "SWP": ["Wednesday"]
+            }
+          ],
+          "repairs": [
+            {
+              "Axels": ["Tuesday", "Thursday"],
+              "Brakes": ["Tuesday", "Thursday", "Saturday"],
+              "Chasis": ["Friday"],
+              "B-Check": ["Tuesday", "Thursday", "Saturday"]
+            }
+          ]
+        },
+        {
+          "id": "W2-Bay-2",
+          "services": [
+            {
+              "MOT": ["Thursday"],
+              "ADR": ["Thursday"],
+              "CFK": ["Wednesday", "Friday", "Saturday"],
+              "SWP": ["Wednesday", "Friday", "Saturday"]
+            }
+          ],
+          "repairs": [
+            {
+              "Axels": ["Wednesday", "Thursday", "Friday"],
+              "Brakes": ["Wednesday", "Thursday", "Friday", "Saturday"],
+              "Chasis": ["Tuesday"],
+              "B-Check": ["Wednesday", "Thursday", "Friday", "Saturday"]
+            }
+          ]
+        },
+        {
+          "id": "W2-Bay-3",
+          "services": [
+            {
+              "MOT": ["Wednesday", "Friday"],
+              "ADR": ["Wednesday", "Friday", "Saturday"],
+              "CFK": ["Tuesday"]
+            }
+          ],
+          "repairs": [
+            {
+              "Axels": ["Tuesday", "Wednesday", "Friday"],
+              "Body": ["Thursday"],
+              "Brakes": ["Tuesday", "Wednesday", "Friday", "Saturday"],
+              "B-Check": ["Tuesday", "Wednesday", "Friday", "Saturday"]
+            }
+          ]
+        },
+        {
+          "id": "W2-Bay-4",
+          "services": [
+            {
+              "MOT": ["Friday"],
+              "ADR": ["Friday"],
+              "CFK": ["Tuesday", "Thursday", "Saturday"]
+            }
+          ],
+          "repairs": [
+            {
+              "Axels": ["Tuesday", "Thursday", "Friday"],
+              "Body": ["Wednesday"],
+              "Brakes": ["Tuesday", "Thursday", "Friday", "Saturday"],
+              "B-Check": ["Tuesday", "Thursday", "Friday", "Saturday"]
+            }
+          ]
+        }
+      ],
+      "workingHours": {
+        "Monday": null,
+        "Tuesday": { "open": "08:00", "close": "17:00" },
+        "Wednesday": { "open": "08:00", "close": "17:00" },
+        "Thursday": { "open": "08:00", "close": "17:00" },
+        "Friday": { "open": "08:00", "close": "17:00" },
+        "Saturday": { "open": "08:00", "close": "12:00" },
+        "Sunday": null
+      }
+    },
+    {
+      "id": "workshop-3",
+      "name": "Utrecht East",
+      "bays": [
+        {
+          "id": "W3-Bay-1",
+          "services": [
+            {
+              "MOT": ["Monday", "Thursday"],
+              "ADR": ["Monday", "Thursday", "Saturday"],
+              "ATP": ["Wednesday"],
+              "SWP": ["Wednesday"]
+            }
+          ],
+          "repairs": [
+            {
+              "Axels": ["Monday", "Thursday"],
+              "Body": ["Friday"],
+              "Brakes": ["Monday", "Thursday", "Saturday"],
+              "B-Check": ["Monday", "Thursday", "Saturday"]
+            }
+          ]
+        },
+        {
+          "id": "W3-Bay-2",
+          "services": [
+            {
+              "MOT": ["Thursday"],
+              "ADR": ["Thursday"],
+              "ATP": ["Wednesday", "Friday", "Saturday"],
+              "SWP": ["Wednesday", "Friday", "Saturday"]
+            }
+          ],
+          "repairs": [
+            {
+              "Axels": ["Wednesday", "Thursday", "Friday"],
+              "Body": ["Monday"],
+              "Brakes": ["Wednesday", "Thursday", "Friday", "Saturday"],
+              "B-Check": ["Wednesday", "Thursday", "Friday", "Saturday"]
+            }
+          ]
+        },
+        {
+          "id": "W3-Bay-3",
+          "services": [
+            {
+              "MOT": ["Wednesday", "Friday"],
+              "ATP": ["Monday"],
+              "SWP": ["Monday"]
+            }
+          ],
+          "repairs": [
+            {
+              "Axels": ["Monday", "Wednesday", "Friday"],
+              "Brakes": ["Monday", "Wednesday", "Friday", "Saturday"],
+              "Chasis": ["Thursday"],
+              "B-Check": ["Monday", "Wednesday", "Friday", "Saturday"]
+            }
+          ]
+        },
+        {
+          "id": "W3-Bay-4",
+          "services": [
+            {
+              "MOT": ["Friday"],
+              "ATP": ["Monday", "Thursday", "Saturday"],
+              "SWP": ["Monday", "Thursday", "Saturday"]
+            }
+          ],
+          "repairs": [
+            {
+              "Axels": ["Monday", "Thursday", "Friday"],
+              "Brakes": ["Monday", "Thursday", "Friday", "Saturday"],
+              "Chasis": ["Wednesday"],
+              "B-Check": ["Monday", "Thursday", "Friday", "Saturday"]
+            }
+          ]
+        }
+      ],
+      "workingHours": {
+        "Monday": { "open": "08:00", "close": "17:00" },
+        "Tuesday": null,
+        "Wednesday": { "open": "08:00", "close": "17:00" },
+        "Thursday": { "open": "08:00", "close": "17:00" },
+        "Friday": { "open": "08:00", "close": "17:00" },
+        "Saturday": { "open": "08:00", "close": "12:00" },
+        "Sunday": null
+      }
+    },
+    {
+      "id": "workshop-4",
+      "name": "Eindhoven South",
+      "bays": [
+        {
+          "id": "W4-Bay-1",
+          "services": [
+            {
+              "MOT": ["Tuesday", "Thursday"],
+              "CFK": ["Monday"],
+              "ATP": ["Monday"],
+              "SWP": ["Tuesday", "Thursday", "Saturday"]
+            }
+          ],
+          "repairs": [
+            {
+              "Axels": ["Friday"],
+              "Body": ["Tuesday", "Thursday", "Saturday"],
+              "Brakes": ["Tuesday", "Thursday", "Saturday"],
+              "B-Check": ["Tuesday", "Thursday", "Saturday"]
+            }
+          ]
+        },
+        {
+          "id": "W4-Bay-2",
+          "services": [
+            {
+              "MOT": ["Tuesday"],
+              "CFK": ["Thursday", "Friday"],
+              "ATP": ["Thursday", "Friday", "Saturday"]
+            }
+          ],
+          "repairs": [
+            {
+              "Axels": ["Tuesday", "Thursday", "Friday"],
+              "Body": ["Monday"],
+              "Brakes": ["Tuesday", "Thursday", "Friday", "Saturday"],
+              "B-Check": ["Tuesday", "Thursday", "Friday", "Saturday"]
+            }
+          ]
+        },
+        {
+          "id": "W4-Bay-3",
+          "services": [
+            {
+              "MOT": ["Monday", "Tuesday"],
+              "CFK": ["Friday"],
+              "ATP": ["Friday"],
+              "SWP": ["Monday", "Tuesday", "Saturday"]
+            }
+          ],
+          "repairs": [
+            {
+              "Axels": ["Tuesday"],
+              "Body": ["Monday", "Tuesday", "Saturday"],
+              "Brakes": ["Monday", "Saturday"],
+              "B-Check": ["Monday", "Saturday"]
+            }
+          ]
+        },
+        {
+          "id": "W4-Bay-4",
+          "services": [
+            {
+              "MOT": ["Thursday"],
+              "CFK": ["Monday", "Friday"],
+              "ATP": ["Monday", "Friday", "Saturday"]
+            }
+          ],
+          "repairs": [
+            {
+              "Axels": ["Monday", "Thursday", "Friday"],
+              "Body": ["Thursday"],
+              "Brakes": ["Monday", "Thursday", "Friday", "Saturday"],
+              "B-Check": ["Monday", "Thursday", "Friday", "Saturday"]
+            }
+          ]
+        }
+      ],
+      "workingHours": {
+        "Monday": { "open": "09:00", "close": "17:00" },
+        "Tuesday": { "open": "09:00", "close": "17:00" },
+        "Wednesday": null,
+        "Thursday": { "open": "09:00", "close": "17:00" },
+        "Friday": { "open": "09:00", "close": "17:00" },
+        "Saturday": { "open": "08:00", "close": "12:00" },
+        "Sunday": null
+      }
+    }
+  ]
+}
