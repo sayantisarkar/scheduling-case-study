@@ -1,49 +1,31 @@
-import express from 'express';
 import { AvailabilityEngine } from './domain/engine.js';
-import type { Request, Response } from 'express';
+import express from 'express';
+import { AvailabilityController } from './api/availability.controller.js';
+import { logger } from './utils/logger.js';
+import 'dotenv/config'; // Loads variables from .env
 
-const app = express();
 const port = process.env.PORT || 3000;
-
+const engine = new AvailabilityEngine();
+const app = express();
 app.use(express.json());
 
-const engine = new AvailabilityEngine();
+const controller = new AvailabilityController();
 
-app.post('/api/availability', (req: Request, res: Response) => {
-    try {
-        const { services = [], repairs = [] } = req.body;
+app.post('/api/availability', controller.handleGetAvailability);
 
-        // Basic validation as requested in technical expectations
-        if (!Array.isArray(services) || !Array.isArray(repairs)) {
-             res.status(400).json({ success: false, error: "Invalid input format" });
-             return;
+// Global Error Handler Middleware
+app.use((err: any, req: any, res: any, next: any) => {
+    logger.error('Unhandled Exception', err);
+
+    res.status(err.status || 500).json({
+        success: false,
+        error: {
+            message: err.message || 'Internal Server Error',
+            type: err.name || 'ServerError'
         }
-
-        const results = engine.findSlots(services, repairs);
-        
-        // Total requested hours calculation for the Request Summary
-        // This is handled here to keep the engine focused on scheduling
-        const totalRequestedHours = [...services, ...repairs].reduce((acc, job) => {
-            // Accessing the repository to get durations
-            return acc + engine['repo'].getJobDuration(job); 
-        }, 0);
-
-        res.json({
-            success: true,
-            request: {
-                services,
-                repairs,
-                totalRequestedHours,
-                startDate: new Date().toISOString().split('T')[0],
-                endDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-            },
-            results
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, error: "Internal Server Error" });
-    }
+    });
 });
+
 // 1. Basic Health Check
 app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', message: 'Workshop Availability Service is running' });
@@ -54,7 +36,7 @@ app.get('/api/test-availability', (req, res) => {
     // We simulate the example request provided in the case study [cite: 47-50]
     const services = ["MOT"];
     const repairs = ["Brakes"];
-    
+
     try {
         const results = engine.findSlots(services, repairs);
         res.json({
@@ -66,6 +48,23 @@ app.get('/api/test-availability', (req, res) => {
         res.status(400).json({ success: false, error: error.message });
     }
 });
-app.listen(port, () => {
-    console.log(`🚀 Workshop Availability Service running at http://localhost:${port}`);
-});
+
+const server = app.listen(port, () => console.log(`🚀 Workshop Availability Service running at http://localhost:${port}`));
+
+// Graceful Shutdown Logic [cite: 21, 101]
+const shutdown = () => {
+    logger.info('Received shutdown signal. Closing server...');
+    server.close(() => {
+        logger.info('Server closed. Process exiting.');
+        process.exit(0);
+    });
+
+    // Force exit if server takes too long to close
+    setTimeout(() => {
+        logger.error('Forced shutdown: Could not close connections in time.');
+        process.exit(1);
+    }, 10000);
+};
+
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
