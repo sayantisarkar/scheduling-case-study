@@ -46,6 +46,7 @@ Create a `.env` file in the root directory:
 ```text
 PORT=5050
 CONFIG_PATH=./data/workshops.config.json
+# Optional; defaults to ./data/workshops.config.json when omitted
 
 ```
 

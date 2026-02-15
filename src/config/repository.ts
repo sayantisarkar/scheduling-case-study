@@ -11,7 +11,8 @@ export class WorkshopRepository {
     };
 
     private constructor() {
-        const filePath = path.resolve(process.cwd(), 'data/workshops.config.json');
+        const configPath = process.env.CONFIG_PATH || './data/workshops.config.json';
+        const filePath = path.resolve(process.cwd(), configPath);
         const rawData = fs.readFileSync(filePath, 'utf-8');
         this.data = JSON.parse(rawData);
     }
