@@ -1,53 +1,36 @@
-# Workshop Booking Availability Service
+# Workshop Booking Availability Engine
 
-A high-performance, **modular monolith** backend service designed to calculate vehicle maintenance availability across multiple workshops within a 60-day window.
+A high-precision scheduling service designed to calculate vehicle maintenance availability across multiple workshops. The engine respects complex constraints including bay capabilities, sequential job dependencies, and multi-day workshop stays.
 
-## 🏗️ Architectural Decisions
+## 🏗️ Architectural Overview
 
-### 1. Modular Monolith Mindset
+### 1. The "Greedy Search" Scheduling Algorithm
 
-The project is structured with clear domain boundaries. By separating the **API Layer** (Controllers), **Application Layer** (Services), and **Domain Layer** (Scheduling Engine), the core business logic remains independent of the delivery mechanism.
+Unlike a simple slot-finder, this service implements a **Greedy Search Algorithm with Horizon Bound (60 days)**.
 
+* **Sequential Integrity**: Each job in a sequence (e.g., MOT → ADR → Axels) is scheduled starting exactly at the finish time of the previous job.
+* **Multi-Day Carryover**: If a job sequence exceeds the daily working hours of a workshop, the engine automatically carries the remainder of the "Execution Plan" over to the next available working day.
+* **Bay Hopping**: The engine allows for "Bay Hopping"—moving a vehicle between different specialized bays within the same workshop to achieve the earliest possible completion time.
 
-**Benefit**: This allows for easy testing and a seamless transition to a Serverless architecture (e.g., AWS Lambda) by swapping the Express controller for a native handler.
+### 2. Dependency Management
 
+The engine features an **Implicit Dependency Resolver**. If a user requests a repair that requires a specific service (e.g., "Body Repair" requiring an "SWP" check), the engine automatically expands the execution plan to include the required service, ensuring business rules are enforced at the API level.
 
+### 3. Modular Monolith Design
 
-### 2. Multi-Day Sequential Scheduling
+The project follows a strict separation of concerns:
 
-The engine implements a **look-ahead search algorithm** that respects the sequential nature of fleet maintenance.
-
-* If a sequence of jobs (e.g., MOT + Body Repair) exceeds a single day's working hours, the system automatically "carries over" the remaining work to the next available slot.
-
-
-
-### 3. Serverless-Aware & Cloud Ready
-
-* 
-**Twelve-Factor App**: Configuration is managed via environment variables (`dotenv`).
-
-
-* **Graceful Shutdown**: The service listens for `SIGTERM` signals to finish inflight requests before exiting, ensuring zero-downtime deployments.
-* **Structured Logging**: Logs are output in JSON format, optimized for ingestion by AWS CloudWatch or ELK stacks.
+* **API Layer**: Controllers handle validation and HTTP concerns.
+* **Service Layer**: Orchestrates the data flow and prepares the final API response.
+* **Domain Layer**: The `AvailabilityEngine` remains pure and contains the core scheduling logic.
+* **Infrastructure Layer**: Repositories handle data access, making it easy to swap the JSON config for a database in the future.
 
 ## 🛠️ Technical Stack
 
-* 
-**Runtime**: Node.js (ESM Mode) 
-
-
-* 
-**Language**: TypeScript (Strict Mode) 
-
-
-* 
-**Framework**: Express 
-
-
-* 
-**Testing**: Jest / ts-jest 
-
-
+* **Runtime**: Node.js (ESM / NodeNext)
+* **Language**: TypeScript (Strict Mode)
+* **Framework**: Express.js
+* **Configuration**: Dotenv (12-Factor App compliance)
 
 ## 🚀 Getting Started
 
@@ -58,10 +41,10 @@ npm install
 ```
 
 
-2. **Environment Setup**:
-Create a `.env` file in the root:
+2. **Configuration**:
+Create a `.env` file in the root directory:
 ```text
-PORT=3000
+PORT=5050
 CONFIG_PATH=./data/workshops.config.json
 
 ```
@@ -74,53 +57,31 @@ npm run dev
 ```
 
 
-4. **Production Build**:
-```bash
-npm run build
-npm start
 
-```
+## 🧪 Testing the Scenarios
 
+### 1. Sequential Multi-Day Test (The 15-Hour Plan)
 
-
-## 🧪 API Usage
-
-### Query Availability
-
-**Endpoint**: `POST /api/availability` 
-
-**Payload**:
+**Request**: `POST /api/availability`
 
 ```json
 {
-  "services": ["MOT", "SWP"],
-  "repairs": ["Body"]
+  "services": ["MOT", "ADR", "CFK"],
+  "repairs": ["Axels"]
 }
 
 ```
 
-## ⚖️ Trade-offs & Assumptions
+**Expected**: The engine will distribute these 15 hours across 2-3 days (depending on weekend/closed days), providing a detailed `schedule` array for each job.
 
-* 
-**In-Memory Persistence**: For this case study, `workshops.config.json` is treated as a read-only repository. In a production environment, this would be replaced by a **DynamoDB** or **PostgreSQL** instance to handle real-time booking updates and state persistence.
+## ⚖️ Trade-offs & Production Scaling
 
+* **In-Memory Repository**: To meet the 48-hour deadline, the system uses an in-memory repository for workshop configurations. In production, this would be replaced with **Amazon DynamoDB** for sub-second retrieval of global workshop states.
+* **Atomic Scheduling**: The current engine is a "Query" service. In a full production environment, this would be integrated with an **Event-Driven Architecture** (using AWS EventBridge) to "lock" slots once a booking is confirmed.
+* **Observability**: Structured JSON logging is implemented to ensure seamless integration with **AWS CloudWatch** or **Datadog**.
 
-* **First-Available-Bay Strategy**: The engine assigns the first bay that meets the capability and time requirements. While pragmatic for a startup MVP, a more advanced version could optimize for "Bay Specialization" to increase workshop throughput.
-* 
-**60-Day Search Window**: As per requirements, the search is bound to 60 days from the current execution date.
+## 🛡️ Production Readiness
 
-
-
-## ☁️ AWS Scaling & Production
-
-To operate this at scale on AWS, the following strategy is recommended:
-
-1. **Compute**: Deploy as an **AWS Lambda** function fronted by **Amazon API Gateway**. This offers sub-second scaling and a pay-per-request cost model.
-
-
-2. 
-**Storage**: Migrate workshop configurations to **DynamoDB** with Global Tables for low-latency access across regions.
-
-
-3. **Caching**: Implement **Amazon ElastiCache (Redis)** to cache availability results for common queries, reducing compute overhead during peak periods.
-4. **CI/CD**: Use **AWS CodePipeline** to automate the build, test, and deployment of the TypeScript code as a Lambda Layer.
+* **Graceful Shutdown**: Listens for `SIGTERM`/`SIGINT` to prevent request loss.
+* **Security**: Input validation layer prevents malformed payloads from reaching the engine.
+* **Cloud Ready**: Decoupled from hardcoded ports and paths via environment variables.
